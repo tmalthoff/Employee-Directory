@@ -38,10 +38,10 @@ export default class App extends React.Component {
 
   filteredResults(results) {
     return results.filter(user => {
-      return user.name.indexOf(this.state.filterBy.name) >= 0 &&
-             user.email.indexOf(this.state.filterBy.email) >= 0 &&
-             user.phone.indexOf(this.state.filterBy.phone) >= 0 &&
-             user.cell.indexOf(this.state.filterBy.cell) >= 0;
+      return user.name.toUpperCase().includes(this.state.filterBy.name.toUpperCase())   &&
+             user.email.toUpperCase().includes(this.state.filterBy.email.toUpperCase()) &&
+             user.phone.toUpperCase().includes(this.state.filterBy.phone.toUpperCase())  &&
+             user.cell.toUpperCase().includes(this.state.filterBy.cell.toUpperCase()) ;
     });
   }
 
