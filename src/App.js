@@ -1,4 +1,5 @@
 import React from "react";
+import SortableHeader from "./SortableHeader";
 import './App.css';
 
 export default class App extends React.Component {
@@ -35,13 +36,47 @@ export default class App extends React.Component {
     })
   }
 
-  filteredResults() {
-    return this.state.results.filter(user => {
+  filteredResults(results) {
+    return results.filter(user => {
       return user.name.indexOf(this.state.filterBy.name) >= 0 &&
              user.email.indexOf(this.state.filterBy.email) >= 0 &&
              user.phone.indexOf(this.state.filterBy.phone) >= 0 &&
              user.cell.indexOf(this.state.filterBy.cell) >= 0;
     });
+  }
+
+  sortBy(property) {
+    return (order) => this.setState({
+      sortBy: {
+        column: [property],
+        order: order
+      }
+    })
+  }
+
+  sortedResults(results) {
+    if (!this.state.sortBy.column) return results;
+
+    return results.sort((a, b) => {
+      // ignore upper and lowercase
+      let columnA = a[this.state.sortBy.column].toUpperCase();
+      let columnB = b[this.state.sortBy.column].toUpperCase(); 
+
+      if (columnA < columnB) {
+        return -1 * this.state.sortBy.order;
+      }
+
+      if (columnA > columnB) {
+        return 1 * this.state.sortBy.order;
+      }
+
+      // values are equal
+      return 0;
+    })
+  }
+
+  order(column) {
+    return this.state.sortBy.column == column ? this.state.sortBy.order : 0
   }
 
   render() {
@@ -50,10 +85,10 @@ export default class App extends React.Component {
         <table>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Cellphone</th>
+              <SortableHeader name="Name" order={this.order('name')} onChange={this.sortBy('name')}/>
+              <SortableHeader name="Email" order={this.order('email')} onChange={this.sortBy('email')}/>
+              <SortableHeader name="Phone" order={this.order('phone')} onChange={this.sortBy('phone')}/>
+              <SortableHeader name="Cellphone" order={this.order('cell')} onChange={this.sortBy('cell')}/>
             </tr>
             <tr>
               <th><input type="text" placeholder="Filter by name" onChange={this.filterBy('name')} /></th>
@@ -63,8 +98,8 @@ export default class App extends React.Component {
             </tr>
           </thead>
           <tbody>
-            { this.filteredResults().map(user => (
-              <tr>
+            { this.sortedResults(this.filteredResults(this.state.results)).map(user => (
+             <tr>
                 <td>{user.name}</td>
                 <td>{user.email}</td>
                 <td>{user.phone}</td>
